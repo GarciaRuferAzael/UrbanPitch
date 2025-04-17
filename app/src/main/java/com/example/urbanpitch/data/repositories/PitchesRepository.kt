@@ -1,10 +1,10 @@
 package com.example.urbanpitch.data.repositories
 
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.data.database.PitchesDao
+import com.example.urbanpitch.data.database.PitchesDAO
 import kotlinx.coroutines.flow.Flow
 
-class PitchRepository (private val dao: PitchesDao) {
+class PitchesRepository (private val dao: PitchesDAO) {
     val pitches: Flow<List<Pitch>> = dao.getAll()
 
     fun getByCity(city: String) = dao.getByCity(city)

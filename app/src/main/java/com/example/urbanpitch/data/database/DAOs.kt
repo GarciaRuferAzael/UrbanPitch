@@ -7,7 +7,7 @@ import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface PitchesDao {
+interface PitchesDAO {
     @Query("SELECT * FROM pitch")
     fun getAll(): Flow<List<Pitch>>
 

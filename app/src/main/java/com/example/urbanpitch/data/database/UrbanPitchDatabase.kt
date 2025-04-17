@@ -5,5 +5,5 @@ import androidx.room.RoomDatabase
 
 @Database(entities = [Pitch::class], version = 1)
 abstract class UrbanPitchDatabase : RoomDatabase() {
-    abstract fun pitchesDAO(): PitchesDao
+    abstract fun pitchesDAO(): PitchesDAO
 }
