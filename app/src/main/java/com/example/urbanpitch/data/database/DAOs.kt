@@ -1,2 +1,23 @@
 package com.example.urbanpitch.data.database
 
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Query
+import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface PitchesDao {
+    @Query("SELECT * FROM pitch")
+    fun getAll(): Flow<List<Pitch>>
+
+    @Query("SELECT * FROM pitch WHERE city = :city ")
+    fun getByCity(city: String): Flow<List<Pitch>>
+
+    @Upsert
+    suspend fun upsert(pitch: Pitch)
+
+    @Delete
+    suspend fun delete(item: Pitch)
+
+}
