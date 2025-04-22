@@ -14,7 +14,9 @@ val appModule = module {
             get(),
             UrbanPitchDatabase::class.java,
             "urban-pitch"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     single { get<UrbanPitchDatabase>().pitchesDAO() }

@@ -21,11 +21,15 @@ data class Pitch (
     var city: String,
 
     @ColumnInfo
+    var imageUrl: String,
+
+    @ColumnInfo
     var longitude: Float,
 
     @ColumnInfo
     var latitude: Float
 )
+
 
 @Entity
 data class User (

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -24,24 +26,25 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
+import com.example.urbanpitch.ui.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
+import com.example.urbanpitch.ui.UrbanPitchRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(state: PitchesState, navController: NavController) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Campi Sportivi") }
-            )
-        },
+        bottomBar = {BottomNavigationBar(navController)},
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate("addPitch")
+                    navController.navigate(UrbanPitchRoute.AddScreen.toString())
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
@@ -69,24 +72,36 @@ fun HomeScreen(state: PitchesState, navController: NavController) {
         }
     }
 }
-
 @Composable
-fun PitchItem(pitch: Pitch, onClick: () -> Unit) {
-    Card (
+fun PitchItem(pitch: Pitch, distanceInKm: Double = 0.0, onClick: () -> Unit) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .clickable { onClick() }
+            .padding(4.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = pitch.name)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = pitch.city)
-            Text(text = pitch.description)
+        Column {
+            AsyncImage(
+                model = pitch.imageUrl,
+                contentDescription = pitch.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            )
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(text = pitch.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = pitch.city, style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Distanza: %.1f km".format(distanceInKm),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
+
