@@ -1,4 +1,4 @@
-package com.example.urbanpitch.ui.screens.home
+package com.example.urbanpitch.ui.screens.add
 
 import android.net.Uri
 import android.widget.Toast
@@ -37,9 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.ui.BottomNavigationBar
+import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesViewModel
-import com.example.urbanpitch.ui.UrbanPitchRoute
 import com.example.urbanpitch.utils.saveImageToInternalStorage
 import org.koin.androidx.compose.koinViewModel
 

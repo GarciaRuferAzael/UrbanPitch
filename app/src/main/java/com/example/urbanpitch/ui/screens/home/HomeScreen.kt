@@ -1,6 +1,5 @@
 package com.example.urbanpitch.ui.screens.home
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,9 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -32,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.ui.BottomNavigationBar
+import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
 import com.example.urbanpitch.ui.UrbanPitchRoute
 
@@ -40,7 +37,7 @@ import com.example.urbanpitch.ui.UrbanPitchRoute
 @Composable
 fun HomeScreen(state: PitchesState, navController: NavController) {
     Scaffold(
-        bottomBar = {BottomNavigationBar(navController)},
+        bottomBar = { BottomNavigationBar(navController) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

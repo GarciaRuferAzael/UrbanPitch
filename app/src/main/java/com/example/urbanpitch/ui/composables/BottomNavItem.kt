@@ -1,4 +1,4 @@
-package com.example.urbanpitch.ui
+package com.example.urbanpitch.ui.composables
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.urbanpitch.ui.UrbanPitchRoute
 
 sealed class BottomNavItem(
     val route: UrbanPitchRoute,
