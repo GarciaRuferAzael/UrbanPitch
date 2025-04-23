@@ -16,11 +16,13 @@ import androidx.navigation.NavController
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
 import com.example.urbanpitch.ui.UrbanPitchRoute
+import com.example.urbanpitch.ui.composables.AppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(state: PitchesState, navController: NavController) {
     Scaffold(
+        topBar = { AppBar(navController, title = "Mappa") },
         bottomBar = { BottomNavigationBar(navController) },
         floatingActionButton = {
             FloatingActionButton(
@@ -37,7 +39,7 @@ fun MapScreen(state: PitchesState, navController: NavController) {
         }
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
-            Text("Mappa")
+
         }
     }
 }

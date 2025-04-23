@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.urbanpitch.ui.screens.add.AddScreen
+import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.home.HomeScreen
 import com.example.urbanpitch.ui.screens.map.MapScreen
 import com.example.urbanpitch.ui.screens.profile.ProfileScreen
@@ -44,7 +45,14 @@ fun UrbanPitchNavGraph(navController: NavHostController, modifier: Modifier = Mo
             ProfileScreen(pitchesState, navController)
         }
         composable(UrbanPitchRoute.AddScreen.toString()) {
-            AddScreen(navController)
+            val addPitchVm = koinViewModel<AddViewModel>()
+            val state by addPitchVm.state.collectAsStateWithLifecycle()
+            AddScreen(
+                navController,
+                state,
+                addPitchVm.actions,
+                onSubmit = { pitchVm.addPitch(state.toPitch()) }
+            )
         }
 
     }

@@ -32,11 +32,13 @@ import com.example.urbanpitch.data.database.Pitch
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
 import com.example.urbanpitch.ui.UrbanPitchRoute
+import com.example.urbanpitch.ui.composables.AppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(state: PitchesState, navController: NavController) {
     Scaffold(
+        topBar = { AppBar(navController, title = "UrbanPitch")},
         bottomBar = { BottomNavigationBar(navController) },
         floatingActionButton = {
             FloatingActionButton(
