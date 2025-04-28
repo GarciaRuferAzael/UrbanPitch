@@ -156,7 +156,6 @@ fun AddScreen(navController: NavController,
         }
     }
 
-
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         topBar = { AppBar(navController, title = "Aggiungi Campo") },
@@ -173,6 +172,7 @@ fun AddScreen(navController: NavController,
                             latitude = latitude.toFloatOrNull() ?: 0f,
                             longitude = longitude.toFloatOrNull() ?: 0f
                         )
+                        Log.d("aggiuntaDB", "pitch name: $name")
                         pitchVm.addPitch(pitch)
                         navController.popBackStack()
                     } else {
