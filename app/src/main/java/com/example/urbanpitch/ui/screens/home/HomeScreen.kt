@@ -1,6 +1,8 @@
 package com.example.urbanpitch.ui.screens.home
 
 import android.location.Location
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,6 +45,8 @@ import com.example.urbanpitch.ui.UrbanPitchRoute
 import com.example.urbanpitch.ui.composables.AppBar
 import com.example.urbanpitch.utils.Coordinates
 import com.example.urbanpitch.utils.LocationService
+import com.example.urbanpitch.utils.PermissionStatus
+import com.example.urbanpitch.utils.rememberMultiplePermissions
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,8 +56,31 @@ fun HomeScreen(state: PitchesState, navController: NavController) {
     val context = LocalContext.current
     val locationService = remember { LocationService(context) }
 
+    // 👇 Qui chiediamo permessi di localizzazione
+    val locationPermissionHandler = rememberMultiplePermissions(
+        permissions = listOf(
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+    ) { statuses ->
+        // Questo blocco viene chiamato dopo che l'utente risponde alla richiesta
+        val allGranted = statuses.all { it.value == PermissionStatus.Granted }
+        if (!allGranted) {
+            // Mostra un messaggio o guida l'utente
+            Toast.makeText(context, "Permessi di localizzazione richiesti per calcolare la distanza", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Se i permessi non sono ancora concessi, chiede in automatico
+    LaunchedEffect(locationPermissionHandler.statuses) {
+        val allGranted = locationPermissionHandler.statuses.all { it.value == PermissionStatus.Granted }
+        if (!allGranted) {
+            locationPermissionHandler.launchPermissionRequest()
+        }
+    }
+
     Scaffold(
-        topBar = { AppBar(navController, title = "UrbanPitch")},
+        topBar = { AppBar(navController, title = "UrbanPitch") },
         bottomBar = { BottomNavigationBar(navController) },
         floatingActionButton = {
             FloatingActionButton(
@@ -69,47 +96,66 @@ fun HomeScreen(state: PitchesState, navController: NavController) {
             }
         }
     ) { contentPadding ->
+
         if (state.pitches.isNotEmpty()) {
-            LazyVerticalGrid (
+            val allLocationPermissionsGranted = locationPermissionHandler.statuses.all { it.value.isGranted }
+
+            LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp,8.dp, 8.dp,80.dp),
+                contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 80.dp),
                 modifier = Modifier.padding(contentPadding)
-            )  {
+            ) {
                 items(state.pitches) { item ->
-                    PitchItemWithDistance(item, locationService, onClick = {})
+                    PitchItemWithDistance(
+                        pitch = item,
+                        locationService = locationService,
+                        isLocationGranted = allLocationPermissionsGranted,
+                        onClick = {}
+                    )
                 }
             }
         } else {
-            Text("nessun item trovato")
+            Text("Nessun campo trovato")
         }
     }
 }
 
 @Composable
-fun PitchItemWithDistance(pitch: Pitch, locationService: LocationService, onClick: () -> Unit) {
+fun PitchItemWithDistance(
+    pitch: Pitch,
+    locationService: LocationService,
+    isLocationGranted: Boolean,
+    onClick: () -> Unit
+) {
     val coroutineScope = rememberCoroutineScope()
     var distance by remember { mutableStateOf<Double?>(null) }
 
-    LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            try {
-                val userCoords = locationService.getCurrentLocation()
-                if (userCoords != null) {
-                    val pitchCoords = Coordinates(pitch.latitude.toDouble(), pitch.longitude.toDouble())
-                    distance = calculateDistanceInKm(userCoords, pitchCoords)
+    LaunchedEffect(isLocationGranted) {
+        if (isLocationGranted) {
+            coroutineScope.launch {
+                try {
+                    val userCoords = locationService.getCurrentLocation()
+                    Log.d("DISTANZA_CALCOLATA", "coordinate user sono null: $userCoords")
+                    if (userCoords != null) {
+                        val pitchCoords = Coordinates(pitch.latitude.toDouble(), pitch.longitude.toDouble())
+                        distance = calculateDistanceInKm(userCoords, pitchCoords)
+                        Log.d("DISTANZA_CALCOLATA", "DISTANZA CALCOLATA : $distance")
+                    }
+                } catch (e: Exception) {
+                    Log.d("DISTANZA_CALCOLATA", "eccezione lanciata: $e")
                 }
-            } catch (e: Exception) {
-                // Gestisci permessi non concessi, posizione disattivata, ecc.
             }
         }
     }
-    PitchItem(pitch = pitch, distanceInKm = distance ?: 0.0, onClick = onClick)
+
+    PitchItem(pitch = pitch, distanceInKm = distance, onClick = onClick)
 }
 
+
 @Composable
-fun PitchItem(pitch: Pitch, distanceInKm: Double = 0.0, onClick: () -> Unit) {
+fun PitchItem(pitch: Pitch, distanceInKm: Double? = 0.0, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

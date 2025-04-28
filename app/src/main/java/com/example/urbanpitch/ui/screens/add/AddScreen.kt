@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -73,6 +74,7 @@ fun AddScreen(navController: NavController,
               actions: AddPitchActions,
               onSubmit: () -> Unit,
               pitchVm: PitchesViewModel = koinViewModel()) {
+
     val context = LocalContext.current
 
     var name by remember { mutableStateOf("") }
@@ -132,6 +134,24 @@ fun AddScreen(navController: NavController,
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(savedStateHandle) {
+        savedStateHandle?.get<Double>("selected_latitude")?.let { lat ->
+            latitude = lat.toString()
+            savedStateHandle.remove<Double>("selected_latitude")
+        }
+        savedStateHandle?.get<Double>("selected_longitude")?.let { lon ->
+            longitude = lon.toString()
+            savedStateHandle.remove<Double>("selected_longitude")
+        }
+        savedStateHandle?.get<String>("selected_city")?.let { selectedCity ->
+            city = selectedCity
+            savedStateHandle.remove<String>("selected_city")
+        }
+    }
+
+
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         topBar = { AppBar(navController, title = "Aggiungi Campo") },
@@ -169,6 +189,19 @@ fun AddScreen(navController: NavController,
         ) {
             OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
             OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrizione") })
+            val coroutineScope = rememberCoroutineScope()
+            Button(onClick = {
+                coroutineScope.launch {
+                    val userCoords = locationService.getCurrentLocation()
+                    Log.d("coordinate", "cordinate calcolate : $userCoords")
+                    val lat = userCoords?.latitude?.toFloat() ?: 41.9028f
+                    val lon = userCoords?.longitude?.toFloat() ?: 12.4964f
+
+                    navController.navigate("select_location/$lat/$lon")
+                }
+            }) {
+                Text("Seleziona posizione sulla mappa")
+            }
             OutlinedTextField(value = city, onValueChange = { city = it }, label = { Text("Città") })
             OutlinedTextField(value = latitude, onValueChange = { latitude = it }, label = { Text("Latitudine") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
             OutlinedTextField(value = longitude, onValueChange = { longitude = it }, label = { Text("Longitudine") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))

@@ -82,5 +82,10 @@ class AddViewModel : ViewModel() {
 
         override fun setShowNoInternetConnectivitySnackbar(show: Boolean) =
             _state.update { it.copy(showNoInternetConnectivitySnackbar = show) }
+
+    }
+
+    fun setLatitudeLongitude(lat: Float, lon: Float) {
+        _state.update { it.copy(latitude = lat, longitude = lon) }
     }
 }
