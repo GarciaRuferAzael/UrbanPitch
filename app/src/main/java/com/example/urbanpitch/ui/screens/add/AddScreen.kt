@@ -22,6 +22,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.BrowseGallery
+import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -193,8 +195,6 @@ fun AddScreen(navController: NavController,
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
-            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrizione") })
             val coroutineScope = rememberCoroutineScope()
             Button(onClick = {
                 coroutineScope.launch {
@@ -211,7 +211,38 @@ fun AddScreen(navController: NavController,
             OutlinedTextField(value = city, onValueChange = { city = it }, label = { Text("Città") })
             OutlinedTextField(value = latitude, onValueChange = { latitude = it }, label = { Text("Latitudine") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
             OutlinedTextField(value = longitude, onValueChange = { longitude = it }, label = { Text("Longitudine") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+
             Spacer(Modifier.size(8.dp))
+
+            Button(onClick = { pickImageLauncher.launch("image/*") }) {
+                Icon(
+                    Icons.Outlined.Photo,
+                    contentDescription = "Gallery icon",
+                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                )
+                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                Text("Seleziona immagine")
+            }
+
+            imageUri?.let {
+                AsyncImage(
+                    model = it,
+                    contentDescription = "Anteprima immagine",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            Spacer(Modifier.size(8.dp))
+
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
+            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrizione") })
+
+            Spacer(Modifier.size(8.dp))
+
             Button(
                 onClick = cameraLauncher::captureImage,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
@@ -222,26 +253,10 @@ fun AddScreen(navController: NavController,
                     modifier = Modifier.size(ButtonDefaults.IconSize)
                 )
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text("Take a picture")
+                Text("Scatta una foto")
             }
-            Spacer(Modifier.size(8.dp))
             ImageWithPlaceholder(state.imageUrl, Size.Lg)
-            Spacer(Modifier.size((4.dp)))
-            Button(onClick = { pickImageLauncher.launch("image/*") }) {
-                Text("Seleziona immagine")
-            }
 
-            imageUri?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = "Anteprima immagine",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
         }
         if (state.showLocationDisabledAlert) {
             AlertDialog(
