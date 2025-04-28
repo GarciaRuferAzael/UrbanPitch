@@ -19,9 +19,9 @@ sealed class BottomNavItem(
     val icon: ImageVector,
     val label: String
 ) {
-    object Home : BottomNavItem(UrbanPitchRoute.HomeScreen, Icons.Default.Home, "Home")
-    object Map : BottomNavItem(UrbanPitchRoute.MapScreen, Icons.Default.LocationOn, "Mappa")
-    object Profile : BottomNavItem(UrbanPitchRoute.ProfileScreen, Icons.Default.AccountBox, "Profilo")
+    object Home : BottomNavItem(UrbanPitchRoute.Home, Icons.Default.Home, "Home")
+    object Map : BottomNavItem(UrbanPitchRoute.Map, Icons.Default.LocationOn, "Mappa")
+    object Profile : BottomNavItem(UrbanPitchRoute.Profile, Icons.Default.AccountBox, "Profilo")
 }
 
 @Composable

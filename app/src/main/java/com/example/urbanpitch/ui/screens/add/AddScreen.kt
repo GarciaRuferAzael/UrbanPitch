@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.PhotoCamera
@@ -53,8 +55,10 @@ import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
 import com.example.urbanpitch.data.remote.OSMDataSource
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
+import com.example.urbanpitch.ui.composables.ImageWithPlaceholder
 import com.example.urbanpitch.ui.PitchesViewModel
 import com.example.urbanpitch.ui.composables.AppBar
+import com.example.urbanpitch.ui.composables.Size
 import com.example.urbanpitch.utils.LocationService
 import com.example.urbanpitch.utils.PermissionStatus
 import com.example.urbanpitch.utils.isOnline
@@ -131,6 +135,7 @@ fun AddScreen(navController: NavController,
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val scrollState = rememberScrollState()
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
@@ -164,7 +169,8 @@ fun AddScreen(navController: NavController,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
@@ -186,6 +192,8 @@ fun AddScreen(navController: NavController,
                 Text("Take a picture")
             }
             Spacer(Modifier.size(8.dp))
+            ImageWithPlaceholder(state.imageUrl, Size.Lg)
+            Spacer(Modifier.size((4.dp)))
             Button(onClick = { pickImageLauncher.launch("image/*") }) {
                 Text("Seleziona immagine")
             }

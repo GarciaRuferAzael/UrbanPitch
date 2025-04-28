@@ -25,10 +25,10 @@ fun ProfileScreen(state: PitchesState, navController: NavController) {
     Scaffold(
         topBar = { AppBar(navController, title = "Profilo Utente") },
         bottomBar = { BottomNavigationBar(navController) },
-        floatingActionButton = {
+        /*floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(UrbanPitchRoute.AddScreen.toString())
+                    navController.navigate(UrbanPitchRoute.Add.toString())
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
@@ -37,7 +37,7 @@ fun ProfileScreen(state: PitchesState, navController: NavController) {
                     contentDescription = "Aggiungi Campo"
                 )
             }
-        }
+        }*/
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
 

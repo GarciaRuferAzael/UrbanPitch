@@ -27,7 +27,7 @@ fun MapScreen(state: PitchesState, navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(UrbanPitchRoute.AddScreen.toString())
+                    navController.navigate(UrbanPitchRoute.Add.toString())
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
