@@ -9,10 +9,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 data class PitchesState(val pitches: List<Pitch>)
 
-class PitchesViewModel(private val repository: PitchesRepository): ViewModel() {
+class PitchesViewModel(
+    private val repository: PitchesRepository
+): ViewModel() {
 
     val state = repository.pitches.map { PitchesState(pitches = it) }.stateIn(
         scope = viewModelScope,

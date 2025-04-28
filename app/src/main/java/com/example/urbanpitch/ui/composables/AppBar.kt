@@ -28,7 +28,7 @@ fun AppBar(navController: NavController, title: String) {
             )
         },
         navigationIcon = {
-            if (navController.previousBackStackEntry != null && title == "Aggiungi Campo" || title == "") {
+            if (navController.previousBackStackEntry != null && title == "Aggiungi Campo" || title == "Dettagli Campo" || title == "") {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Go Back")
                 }
