@@ -89,15 +89,21 @@ fun AddScreen(navController: NavController,
     var latitude by remember { mutableStateOf("") }
     var longitude by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
 
     val cameraLauncher = rememberCameraLauncher(
-        onPictureTaken = { imageUrl -> actions.setImageUrl(imageUrl) }
+        onPictureTaken = { imageUrl ->
+            actions.setImageUrl(imageUrl)
+            selectedImageUri = Uri.parse(imageUrl.toString())
+        }
     )
+
 
     val pickImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        imageUri = uri
+        selectedImageUri = uri
     }
 
 
@@ -164,8 +170,8 @@ fun AddScreen(navController: NavController,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (imageUri != null) {
-                        val path = saveImageToInternalStorage(context, imageUri!!)
+                    if (selectedImageUri != null) {
+                        val path = saveImageToInternalStorage(context, selectedImageUri!!)
                         val pitch = Pitch(
                             name = name,
                             description = description,
@@ -178,7 +184,7 @@ fun AddScreen(navController: NavController,
                         pitchVm.addPitch(pitch)
                         navController.popBackStack()
                     } else {
-                        Toast.makeText(context, "Seleziona un'immagine", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Seleziona o scatta un'immagine", Toast.LENGTH_SHORT).show()
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.primary
@@ -186,6 +192,8 @@ fun AddScreen(navController: NavController,
                 Icon(Icons.Default.Check, contentDescription = "Salva")
             }
         }
+
+
     ) { padding ->
         Column(
             modifier = Modifier
@@ -214,6 +222,11 @@ fun AddScreen(navController: NavController,
 
             Spacer(Modifier.size(8.dp))
 
+            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
+            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrizione") })
+
+            Spacer(Modifier.size(8.dp))
+
             Button(onClick = { pickImageLauncher.launch("image/*") }) {
                 Icon(
                     Icons.Outlined.Photo,
@@ -223,26 +236,6 @@ fun AddScreen(navController: NavController,
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text("Seleziona immagine")
             }
-
-            imageUri?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = "Anteprima immagine",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(360.dp)
-                        .clip(RoundedCornerShape(12.dp)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-            Spacer(Modifier.size(8.dp))
-
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nome") })
-            OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Descrizione") })
-
-            Spacer(Modifier.size(8.dp))
-
             Button(
                 onClick = cameraLauncher::captureImage,
                 contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
@@ -255,9 +248,19 @@ fun AddScreen(navController: NavController,
                 Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                 Text("Scatta una foto")
             }
-            ImageWithPlaceholder(state.imageUrl, Size.Lg)
-
+            selectedImageUri?.let { uri ->
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Anteprima immagine",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(360.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+
         if (state.showLocationDisabledAlert) {
             AlertDialog(
                 title = { Text("Location disabled") },
