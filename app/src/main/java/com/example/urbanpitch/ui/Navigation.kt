@@ -21,6 +21,7 @@ import com.example.urbanpitch.ui.screens.add.AddScreen
 import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.details.DetailsScreen
 import com.example.urbanpitch.ui.screens.home.HomeScreen
+import com.example.urbanpitch.ui.screens.home.HomeViewModel
 import com.example.urbanpitch.ui.screens.map.MapScreen
 import com.example.urbanpitch.ui.screens.profile.ProfileScreen
 import com.example.urbanpitch.utils.Coordinates
@@ -49,15 +50,17 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
         startDestination = UrbanPitchRoute.Home.toString()
     ) {
         composable(UrbanPitchRoute.Home.toString()) {
-            HomeScreen(pitchesState, navController)
+            val homeViewModel: HomeViewModel = koinViewModel()
+            HomeScreen(pitchesState, navController, homeViewModel)
         }
+
         composable<UrbanPitchRoute.Details> { backStackEntry ->
             val route = backStackEntry.toRoute<UrbanPitchRoute.Details>()
             val pitch = requireNotNull(pitchesState.pitches.find { it.id == route.pitchId })
             DetailsScreen(pitch, navController)
         }
         composable(UrbanPitchRoute.Map.toString()) {
-            MapScreen(pitchesState, navController)
+            MapScreen(pitchesState, navController, )
         }
         composable(UrbanPitchRoute.Profile.toString()) {
             ProfileScreen(pitchesState, navController)

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.provider.Settings
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -29,9 +30,6 @@ class LocationService(private val ctx: Context) {
     val isLoadingLocation = _isLoadingLocation.asStateFlow()
 
     suspend fun getCurrentLocation(usePreciseLocation: Boolean = false): Coordinates? {
-        val locationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        if (!locationEnabled) throw IllegalStateException("Location is disabled")
-
         val permissionGranted = ContextCompat.checkSelfPermission(
             ctx,
             Manifest.permission.ACCESS_COARSE_LOCATION
@@ -39,20 +37,32 @@ class LocationService(private val ctx: Context) {
         if (!permissionGranted) throw SecurityException("Location permission not granted")
 
         _isLoadingLocation.value = true
+
         val location = withContext(Dispatchers.IO) {
-            fusedLocationClient.getCurrentLocation(
-                if (usePreciseLocation) Priority.PRIORITY_HIGH_ACCURACY
-                else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-                CancellationTokenSource().token
-            ).await()
+            try {
+                fusedLocationClient.getCurrentLocation(
+                    if (usePreciseLocation) Priority.PRIORITY_HIGH_ACCURACY
+                    else Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+                    CancellationTokenSource().token
+                ).await()
+            } catch (e: Exception) {
+                Log.e("LocationService", "getCurrentLocation() failed: ${e.message}")
+                null
+            } ?: try {
+                // FALLBACK: ultima posizione nota
+                fusedLocationClient.lastLocation.await()
+            } catch (e: Exception) {
+                Log.e("LocationService", "lastLocation fallback failed: ${e.message}")
+                null
+            }
         }
+
         _isLoadingLocation.value = false
 
-        _coordinates.value =
-            if (location != null) Coordinates(location.latitude, location.longitude)
-            else null
-        return coordinates.value
+        _coordinates.value = location?.let { Coordinates(it.latitude, it.longitude) }
+        return _coordinates.value
     }
+
 
     fun openLocationSettings() {
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).apply {
