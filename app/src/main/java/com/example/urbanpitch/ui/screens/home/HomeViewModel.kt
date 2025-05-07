@@ -20,7 +20,9 @@ class HomeViewModel(
         viewModelScope.launch {
             try {
                 val location = locationService.getCurrentLocation()
+
                 _userLocation.value = location
+                Log.d("HomeViewModel", "My Location: $location")
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Errore nel recupero della posizione: ${e.message}")
             }

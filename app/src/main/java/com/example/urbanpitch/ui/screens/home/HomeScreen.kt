@@ -53,13 +53,11 @@ import com.example.urbanpitch.utils.LocationService
 import com.example.urbanpitch.utils.PermissionStatus
 import com.example.urbanpitch.utils.rememberMultiplePermissions
 import kotlinx.coroutines.launch
+import java.io.Console
 
 @Composable
 fun HomeScreen(state: PitchesState, navController: NavController, viewModel: HomeViewModel) {
     val context = LocalContext.current
-
-    // LocationService solo per aprire impostazioni se serve
-    val locationService = remember { LocationService(context) }
 
     val userLocation by viewModel.userLocation.collectAsState()
 
@@ -132,6 +130,7 @@ fun PitchItemWithDistance(
     val distance = remember(userCoords) {
         userCoords?.let {
             val pitchCoords = Coordinates(pitch.latitude.toDouble(), pitch.longitude.toDouble())
+
             calculateDistanceInKm(it, pitchCoords)
         }
     }
