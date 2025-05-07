@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.3"
+androidsvg = "1.4"
 coilCompose = "2.3.0"
 coilComposeVersion = "2.4.0"
 koinAndroidxCompose = "4.0.2"
@@ -27,6 +28,7 @@ playServicesMaps = "19.2.0"
 room = "2.6.1"
 
 [libraries]
+androidsvg = { module = "com.caverock:androidsvg", version.ref = "androidsvg" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }

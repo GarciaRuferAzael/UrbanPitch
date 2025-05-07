@@ -24,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.urbanpitch.R
 import com.example.urbanpitch.data.database.Pitch
 import com.example.urbanpitch.data.repositories.PitchesRepository
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
@@ -34,6 +36,7 @@ import com.example.urbanpitch.ui.UrbanPitchRoute
 import com.example.urbanpitch.ui.composables.AppBar
 import com.example.urbanpitch.utils.Coordinates
 import com.example.urbanpitch.utils.LocationService
+import com.example.urbanpitch.utils.resizeDrawable
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -101,6 +104,16 @@ fun MapScreen(
                     marker.title = pitch.name
                     marker.subDescription = pitch.description
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+
+                    val icon = resizeDrawable(context, R.drawable.football_marker, 80, 80)
+                    marker.icon = icon
+
+                    // 🔥 Listener per click sul marker
+                    marker.setOnMarkerClickListener { _, _ ->
+                        navController.navigate(UrbanPitchRoute.Details(pitch.id))
+                        true // evita comportamento di default
+                    }
+
                     map.overlays.add(marker)
                 }
 
