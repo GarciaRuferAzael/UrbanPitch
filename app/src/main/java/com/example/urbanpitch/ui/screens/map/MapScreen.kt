@@ -105,7 +105,7 @@ fun MapScreen(
                     marker.subDescription = pitch.description
                     marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-                    val icon = resizeDrawable(context, R.drawable.football_marker, 80, 80)
+                    val icon = resizeDrawable(context, R.drawable.football_marker, 60, 60)
                     marker.icon = icon
 
                     // 🔥 Listener per click sul marker
