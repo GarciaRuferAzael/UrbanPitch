@@ -21,3 +21,9 @@ interface PitchesDAO {
     suspend fun delete(item: Pitch)
 
 }
+
+@Dao
+interface UserDAO {
+    @Query("SELECT * FROM user WHERE email = :email LIMIT 1")
+    suspend fun getUserByEmail(email: String): User?
+}

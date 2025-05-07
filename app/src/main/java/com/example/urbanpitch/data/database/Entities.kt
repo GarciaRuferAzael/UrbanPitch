@@ -43,6 +43,9 @@ data class User (
     var email: String,
 
     @ColumnInfo
+    var profileImageUri: String,
+
+    @ColumnInfo
     var hashed_password: String
 )
 
