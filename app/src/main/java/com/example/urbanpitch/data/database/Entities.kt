@@ -6,74 +6,20 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
-data class Pitch (
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    @ColumnInfo
-    var name: String,
-
-    @ColumnInfo
-    var description: String,
-
-    @ColumnInfo
-    var city: String,
-
-    @ColumnInfo
-    var imageUrl: String,
-
-    @ColumnInfo
-    var longitude: Float,
-
-    @ColumnInfo
-    var latitude: Float
+data class Pitch(
+    val id: String = "",  // Firebase usa String come id
+    var name: String = "",
+    var description: String = "",
+    var city: String = "",
+    var imageUrl: String = "",
+    var longitude: Float = 0f,
+    var latitude: Float = 0f
 )
 
-
-@Entity
-data class User (
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    @ColumnInfo
-    var username: String,
-
-    @ColumnInfo
-    var email: String,
-
-    @ColumnInfo
-    var profileImageUri: String,
-
-    @ColumnInfo
-    var hashed_password: String
-)
-
-
-@Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = User::class,
-            parentColumns = ["id"],
-            childColumns = ["user_id"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = Pitch::class,
-            parentColumns = ["id"],
-            childColumns = ["pitch_id"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index("user_id"), Index("pitch_id")]
-)
-data class Favourites (
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    @ColumnInfo(name = "user_id")
-    val userId: Int,
-
-    @ColumnInfo(name = "pitch_id")
-    val pitchId: Int
+data class User(
+    val id: String = "",
+    var username:String = "",
+    var email: String = "",
+    var hashed_password: String = "",
+    var profileImageUri: String = ""
 )

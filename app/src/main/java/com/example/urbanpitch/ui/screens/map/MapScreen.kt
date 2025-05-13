@@ -29,7 +29,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.urbanpitch.R
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.data.repositories.PitchesRepository
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
 import com.example.urbanpitch.ui.UrbanPitchRoute
@@ -37,33 +36,31 @@ import com.example.urbanpitch.ui.composables.AppBar
 import com.example.urbanpitch.utils.Coordinates
 import com.example.urbanpitch.utils.LocationService
 import com.example.urbanpitch.utils.resizeDrawable
+import org.koin.androidx.compose.koinViewModel
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.config.Configuration
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    state: PitchesState,
     navController: NavController
 ) {
     val context = LocalContext.current
-    val map = remember { MapView(context) }
-    val pitches = state.pitches
+    val mapViewModel: MapViewModel = koinViewModel()
+    val pitches by mapViewModel.pitches.collectAsState()
 
     val locationService = remember { LocationService(context) }
     val userLocation = remember { mutableStateOf<Coordinates?>(null) }
 
-    // Recupera posizione in modo sicuro
+    // Recupera posizione sicura
     LaunchedEffect(Unit) {
         val location = locationService.getCurrentLocation()
         userLocation.value = location
     }
 
-    // Posizione di default: Roma
     val lat = userLocation.value?.latitude?.toFloat() ?: 41.9028f
     val lon = userLocation.value?.longitude?.toFloat() ?: 12.4964f
 
@@ -86,10 +83,12 @@ fun MapScreen(
     ) { contentPadding ->
         Box(modifier = Modifier
             .padding(contentPadding)
-            .fillMaxSize()) {
+            .fillMaxSize()
+        ) {
 
             AndroidView(factory = {
                 Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+                val map = MapView(context)
                 map.setTileSource(TileSourceFactory.MAPNIK)
                 map.setMultiTouchControls(true)
 
@@ -97,7 +96,6 @@ fun MapScreen(
                 controller.setZoom(15.0)
                 controller.setCenter(GeoPoint(lat.toDouble(), lon.toDouble()))
 
-                // Marker dei pitch
                 pitches.forEach { pitch ->
                     val marker = Marker(map)
                     marker.position = GeoPoint(pitch.latitude.toDouble(), pitch.longitude.toDouble())
@@ -108,10 +106,9 @@ fun MapScreen(
                     val icon = resizeDrawable(context, R.drawable.football_marker, 60, 60)
                     marker.icon = icon
 
-                    // 🔥 Listener per click sul marker
                     marker.setOnMarkerClickListener { _, _ ->
                         navController.navigate(UrbanPitchRoute.Details(pitch.id))
-                        true // evita comportamento di default
+                        true
                     }
 
                     map.overlays.add(marker)

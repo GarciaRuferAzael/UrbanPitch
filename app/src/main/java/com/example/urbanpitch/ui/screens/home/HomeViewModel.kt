@@ -3,10 +3,14 @@ package com.example.urbanpitch.ui.screens.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.urbanpitch.data.database.Pitch
+import com.example.urbanpitch.data.repositories.PitchesRepositoryFirebase
 import com.example.urbanpitch.utils.Coordinates
 import com.example.urbanpitch.utils.LocationService
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(

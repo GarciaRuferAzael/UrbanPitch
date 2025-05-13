@@ -173,6 +173,7 @@ fun AddScreen(navController: NavController,
                     if (selectedImageUri != null) {
                         val path = saveImageToInternalStorage(context, selectedImageUri!!)
                         val pitch = Pitch(
+                            id = "", // id vuoto, lo crea Firestore
                             name = name,
                             description = description,
                             city = city,
@@ -180,8 +181,12 @@ fun AddScreen(navController: NavController,
                             latitude = latitude.toFloatOrNull() ?: 0f,
                             longitude = longitude.toFloatOrNull() ?: 0f
                         )
-                        Log.d("aggiuntaDB", "pitch name: $name")
+                        Log.d("aggiuntaDB", "Aggiunta pitch: $pitch")
+
+                        // 🔥 Aggiungi il pitch su Firebase
                         pitchVm.addPitch(pitch)
+
+                        // 🔙 Torna indietro alla Home
                         navController.popBackStack()
                     } else {
                         Toast.makeText(context, "Seleziona o scatta un'immagine", Toast.LENGTH_SHORT).show()
@@ -192,6 +197,7 @@ fun AddScreen(navController: NavController,
                 Icon(Icons.Default.Check, contentDescription = "Salva")
             }
         }
+
 
 
     ) { padding ->

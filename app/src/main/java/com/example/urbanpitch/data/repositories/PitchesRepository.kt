@@ -1,15 +1,40 @@
 package com.example.urbanpitch.data.repositories
 
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.data.database.PitchesDAO
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
-class PitchesRepository (private val dao: PitchesDAO) {
-    val pitches: Flow<List<Pitch>> = dao.getAll()
+class PitchesRepositoryFirebase {
 
-    fun getByCity(city: String) = dao.getByCity(city)
+    private val db = FirebaseFirestore.getInstance()
+    private val pitchesCollection = db.collection("pitches")
 
-    suspend fun upsert(pitch: Pitch) = dao.upsert(pitch)
+    fun getAll(): Flow<List<Pitch>> = callbackFlow {
+        val listener = pitchesCollection.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                close(e)
+                return@addSnapshotListener
+            }
+            val pitches = snapshot?.documents?.mapNotNull { it.toObject(Pitch::class.java)?.copy(id = it.id) } ?: emptyList()
+            trySend(pitches)
+        }
+        awaitClose { listener.remove() }
+    }
 
-    suspend fun delete(pitch: Pitch) = dao.delete(pitch)
+    suspend fun upsert(pitch: Pitch) {
+        if (pitch.id.isEmpty()) {
+            pitchesCollection.add(pitch)
+        } else {
+            pitchesCollection.document(pitch.id).set(pitch)
+        }
+    }
+
+    suspend fun delete(pitch: Pitch) {
+        if (pitch.id.isNotEmpty()) {
+            pitchesCollection.document(pitch.id).delete()
+        }
+    }
 }
+

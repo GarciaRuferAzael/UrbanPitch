@@ -48,7 +48,7 @@ fun ProfileScreen(
     onEditProfile: () -> Unit = {}
 ) {
     val user = User(
-        id = 1,
+        id = "1",
         username = "Azael Garcia Rufer",
         email = "azael@example.com",
         hashed_password = "hashed_password",

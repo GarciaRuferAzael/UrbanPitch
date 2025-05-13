@@ -23,14 +23,16 @@ data class AddPitchState(
     val canSubmit get() = name.isNotBlank() && city.isNotBlank() && description.isNotBlank()
 
     fun toPitch() = Pitch(
+        id = "", // lascia id vuoto, sarà Firebase a generarlo
         name = name,
-        description =  description,
+        description = description,
         city = city,
+        imageUrl = imageUrl.toString(),
         latitude = latitude,
-        longitude = longitude,
-        imageUrl = imageUrl.toString()
+        longitude = longitude
     )
 }
+
 
 interface AddPitchActions {
     fun setName(name: String)

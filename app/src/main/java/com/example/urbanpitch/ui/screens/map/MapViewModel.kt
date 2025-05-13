@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.urbanpitch.data.database.Pitch
-import com.example.urbanpitch.data.repositories.PitchesRepository
+import com.example.urbanpitch.data.repositories.PitchesRepositoryFirebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(
-    private val repository: PitchesRepository
+    private val repository: PitchesRepositoryFirebase
 ) : ViewModel() {
 
     private val _pitches = MutableStateFlow<List<Pitch>>(emptyList())
@@ -22,7 +22,7 @@ class MapViewModel(
 
     private fun observePitches() {
         viewModelScope.launch {
-            repository.pitches.collect {
+            repository.getAll().collect {  // 🔥 Usa getAll() di Firebase repository
                 _pitches.value = it
             }
         }
@@ -30,7 +30,7 @@ class MapViewModel(
 }
 
 class MapViewModelFactory(
-    private val repository: PitchesRepository
+    private val repository: PitchesRepositoryFirebase
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

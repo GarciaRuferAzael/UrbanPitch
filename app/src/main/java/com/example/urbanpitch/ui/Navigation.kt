@@ -34,7 +34,7 @@ import org.koin.compose.koinInject
 
 sealed interface UrbanPitchRoute {
     @Serializable data object Home : UrbanPitchRoute
-    @Serializable data class Details(val pitchId : Int) : UrbanPitchRoute
+    @Serializable data class Details(val pitchId : String) : UrbanPitchRoute
     @Serializable data object Add : UrbanPitchRoute
     @Serializable data object Profile : UrbanPitchRoute
     @Serializable data object Login : UrbanPitchRoute
@@ -58,18 +58,19 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
 
         composable<UrbanPitchRoute.Details> { backStackEntry ->
             val route = backStackEntry.toRoute<UrbanPitchRoute.Details>()
+
+            // 🔥 CORREZIONE: cerca usando id STRING, non più int
             val pitch = requireNotNull(pitchesState.pitches.find { it.id == route.pitchId })
+
             DetailsScreen(pitch, navController)
         }
+
         composable(UrbanPitchRoute.Map.toString()) {
-            MapScreen(pitchesState, navController, )
+            MapScreen(navController)
         }
+
         composable(UrbanPitchRoute.Profile.toString()) {
-            //val profileViewModel = viewModel<ProfileViewModel>()
-            ProfileScreen(
-                //viewModel = profileViewModel,
-                navController = navController
-            )
+            ProfileScreen(navController = navController)
         }
 
         composable(UrbanPitchRoute.Add.toString()) {
@@ -79,7 +80,7 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
                 navController,
                 state,
                 addPitchVm.actions,
-                onSubmit = { pitchVm.addPitch(state.toPitch()) }
+                onSubmit = { pitchVm.addPitch(state.toPitch()) } // Salva su Firestore
             )
         }
 
@@ -102,7 +103,5 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
                 osmDataSource = osmDataSource
             )
         }
-
-
     }
 }

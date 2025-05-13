@@ -3,6 +3,7 @@ agp = "8.7.3"
 androidsvg = "1.4"
 coilCompose = "2.3.0"
 coilComposeVersion = "2.4.0"
+firebaseBom = "33.13.0"
 koinAndroidxCompose = "4.0.2"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -26,6 +27,7 @@ osmdroidAndroid = "6.1.16"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.2.0"
 room = "2.6.1"
+firebaseFirestoreKtx = "25.1.4"
 
 [libraries]
 androidsvg = { module = "com.caverock:androidsvg", version.ref = "androidsvg" }
@@ -36,6 +38,7 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 coil-compose-v240 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -62,6 +65,7 @@ maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = 
 osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 
 [plugins]
