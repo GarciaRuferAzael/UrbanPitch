@@ -20,6 +20,6 @@ data class User(
     val id: String = "",
     var username:String = "",
     var email: String = "",
-    var hashed_password: String = "",
+    var hashedPwd: String = "",
     var profileImageUri: String = ""
 )
