@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019091419072",
+    "project_id": "urbanpitch-26502",
+    "storage_bucket": "urbanpitch-26502.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019091419072:android:bc25ff2e200b7426b09225",
+        "android_client_info": {
+          "package_name": "com.example.urbanpitch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx9Q-i_V60Lv2MoO6EHispd0pKUgwNSJI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
