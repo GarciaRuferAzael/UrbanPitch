@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.urbanpitch.ui.UrbanPitchNavGraph
+import com.example.urbanpitch.ui.screens.login.LoginScreen
+import com.example.urbanpitch.ui.screens.login.RegisterScreen
 import com.example.urbanpitch.ui.theme.UrbanPitchTheme
 
 class MainActivity : ComponentActivity() {

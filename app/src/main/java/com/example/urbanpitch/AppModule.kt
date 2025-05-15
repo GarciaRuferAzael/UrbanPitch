@@ -7,6 +7,7 @@ import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.home.HomeViewModel
 import com.example.urbanpitch.ui.screens.map.MapViewModel
 import com.example.urbanpitch.utils.LocationService
+import com.example.urbanpitch.utils.AuthViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -34,7 +35,12 @@ val appModule = module {
 
     // ViewModel
     viewModel { PitchesViewModel(get()) }
+
     viewModel { AddViewModel() }
+
     viewModel { HomeViewModel(get()) }
+
     viewModel { MapViewModel(get()) }
+
+    viewModel { AuthViewModel() }
 }
