@@ -6,6 +6,7 @@ import com.example.urbanpitch.data.remote.OSMDataSource
 import com.example.urbanpitch.data.repositories.PitchesRepository
 import com.example.urbanpitch.ui.PitchesViewModel
 import com.example.urbanpitch.ui.screens.add.AddViewModel
+import com.example.urbanpitch.utils.AuthViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -44,4 +45,6 @@ val appModule = module {
     viewModel { PitchesViewModel( get() ) }
 
     viewModel { AddViewModel() }
+
+    viewModel { AuthViewModel() }
 }
