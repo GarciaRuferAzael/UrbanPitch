@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
@@ -64,14 +65,17 @@ import com.example.urbanpitch.ui.composables.AppBar
 import com.example.urbanpitch.ui.composables.Size
 import com.example.urbanpitch.utils.LocationService
 import com.example.urbanpitch.utils.PermissionStatus
+import com.example.urbanpitch.utils.copyUriToTempFile
 import com.example.urbanpitch.utils.isOnline
 import com.example.urbanpitch.utils.openWirelessSettings
 import com.example.urbanpitch.utils.rememberCameraLauncher
 import com.example.urbanpitch.utils.rememberMultiplePermissions
 import com.example.urbanpitch.utils.saveImageToInternalStorage
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -171,23 +175,46 @@ fun AddScreen(navController: NavController,
             FloatingActionButton(
                 onClick = {
                     if (selectedImageUri != null) {
-                        val path = saveImageToInternalStorage(context, selectedImageUri!!)
-                        val pitch = Pitch(
-                            id = "", // id vuoto, lo crea Firestore
-                            name = name,
-                            description = description,
-                            city = city,
-                            imageUrl = "file://$path",
-                            latitude = latitude.toFloatOrNull() ?: 0f,
-                            longitude = longitude.toFloatOrNull() ?: 0f
-                        )
-                        Log.d("aggiuntaDB", "Aggiunta pitch: $pitch")
+                        val tempFile = copyUriToTempFile(context, selectedImageUri!!)
+                        if (tempFile != null) {
+                            val fileUri = tempFile.toUri()
 
-                        // 🔥 Aggiungi il pitch su Firebase
-                        pitchVm.addPitch(pitch)
+                            val storageRef = FirebaseStorage.getInstance().reference
+                            val imageRef = storageRef.child("pitch_images/${UUID.randomUUID()}.jpg")
 
-                        // 🔙 Torna indietro alla Home
-                        navController.popBackStack()
+                            Log.d("UPLOAD", "Uploading from file URI: $fileUri")
+
+                            val uploadTask = imageRef.putFile(fileUri)
+
+                            uploadTask
+                                .addOnSuccessListener {
+                                    imageRef.downloadUrl.addOnSuccessListener { uri ->
+                                        val imageUrl = uri.toString()
+
+                                        val pitch = Pitch(
+                                            id = "", // id vuoto, lo crea Firestore
+                                            name = name,
+                                            description = description,
+                                            city = city,
+                                            imageUrl = imageUrl, // URL pubblico su Firebase Storage
+                                            latitude = latitude.toFloatOrNull() ?: 0f,
+                                            longitude = longitude.toFloatOrNull() ?: 0f
+                                        )
+                                        Log.d("aggiuntaDB", "Aggiunta pitch: $pitch")
+
+                                        // 🔥 Aggiungi il pitch su Firestore
+                                        pitchVm.addPitch(pitch)
+
+                                        // 🔙 Torna alla Home
+                                        navController.popBackStack()
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(context, "Errore upload immagine: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            Toast.makeText(context, "Errore nel creare il file temporaneo", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(context, "Seleziona o scatta un'immagine", Toast.LENGTH_SHORT).show()
                     }
@@ -196,6 +223,7 @@ fun AddScreen(navController: NavController,
             ) {
                 Icon(Icons.Default.Check, contentDescription = "Salva")
             }
+
         }
 
 
