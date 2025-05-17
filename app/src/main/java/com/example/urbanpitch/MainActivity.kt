@@ -4,27 +4,32 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.urbanpitch.ui.UrbanPitchNavGraph
-import com.example.urbanpitch.ui.screens.login.LoginScreen
-import com.example.urbanpitch.ui.screens.login.RegisterScreen
+import com.example.urbanpitch.ui.UrbanPitchRoute
 import com.example.urbanpitch.ui.theme.UrbanPitchTheme
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+
         setContent {
             UrbanPitchTheme {
                 val navController = rememberNavController()
-                UrbanPitchNavGraph(navController)
+                val startDestination = if (isLoggedIn) {
+                    UrbanPitchRoute.Home.toString()
+                } else {
+                    UrbanPitchRoute.Login.toString()
+                }
+
+                UrbanPitchNavGraph(
+                    navController = navController,
+                    startDestination = startDestination
+                )
             }
         }
     }

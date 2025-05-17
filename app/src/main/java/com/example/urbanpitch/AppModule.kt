@@ -5,9 +5,9 @@ import com.example.urbanpitch.data.repositories.PitchesRepositoryFirebase
 import com.example.urbanpitch.ui.PitchesViewModel
 import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.home.HomeViewModel
+import com.example.urbanpitch.ui.screens.login.AuthViewModel
 import com.example.urbanpitch.ui.screens.map.MapViewModel
 import com.example.urbanpitch.utils.LocationService
-import com.example.urbanpitch.utils.AuthViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json

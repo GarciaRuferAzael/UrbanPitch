@@ -1,16 +1,13 @@
 package com.example.urbanpitch.ui
 
 import SelectLocationOSMScreen
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -23,16 +20,12 @@ import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.details.DetailsScreen
 import com.example.urbanpitch.ui.screens.home.HomeScreen
 import com.example.urbanpitch.ui.screens.home.HomeViewModel
+import com.example.urbanpitch.ui.screens.login.AuthViewModel
 import com.example.urbanpitch.ui.screens.map.MapScreen
 import com.example.urbanpitch.ui.screens.profile.ProfileScreen
 //import com.example.urbanpitch.ui.screens.profile.ProfileViewModel
-import com.example.urbanpitch.utils.Coordinates
-import com.example.urbanpitch.utils.LocationService
 import com.example.urbanpitch.ui.screens.login.LoginScreen
 import com.example.urbanpitch.ui.screens.login.RegisterScreen
-import com.example.urbanpitch.ui.screens.map.MapScreen
-import com.example.urbanpitch.ui.screens.profile.ProfileScreen
-import com.example.urbanpitch.utils.AuthViewModel
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -49,7 +42,7 @@ sealed interface UrbanPitchRoute {
 }
 
 @Composable
-fun UrbanPitchNavGraph(navController: NavHostController) {
+fun UrbanPitchNavGraph(navController: NavHostController, startDestination: String = UrbanPitchRoute.Login.toString()) {
     val pitchVm = koinViewModel<PitchesViewModel>()
     val pitchesState by pitchVm.state.collectAsStateWithLifecycle()
     val authViewModel = koinViewModel<AuthViewModel>()
@@ -57,18 +50,29 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = UrbanPitchRoute.Login.toString()
+        startDestination = startDestination
     ) {
         composable(UrbanPitchRoute.Login.toString()) {
-            LoginScreen(
-                navController = navController,
-                onLogin = { email, password ->
-                    authViewModel.login(email, password)
-                    if (authViewModel.isAuthenticated) {
+            val context = LocalContext.current
+            val authViewModel: AuthViewModel = koinViewModel()
+            val loginResult by authViewModel.loginResult.collectAsState()
+
+            LaunchedEffect(loginResult) {
+                loginResult.onSuccess { success ->
+                    if (success) {
                         navController.navigate(UrbanPitchRoute.Home.toString()) {
                             popUpTo(UrbanPitchRoute.Login.toString()) { inclusive = true }
                         }
                     }
+                }.onFailure { error ->
+                    Toast.makeText(context, "Errore login: ${error.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            LoginScreen(
+                navController = navController,
+                onLogin = { email, password ->
+                    authViewModel.login(email, password)
                 },
                 onRegister = {
                     navController.navigate(UrbanPitchRoute.Register.toString())
@@ -76,16 +80,32 @@ fun UrbanPitchNavGraph(navController: NavHostController) {
             )
         }
 
+
         composable(UrbanPitchRoute.Register.toString()) {
+            val context = LocalContext.current
             RegisterScreen(
                 navController = navController,
                 onRegister = { username, email, password ->
-                    // Handle user registration, then navigate back
-                    navController.popBackStack()
+                    authViewModel.register(
+                        username = username,
+                        email = email,
+                        password = password,
+                        onSuccess = {
+                            navController.navigate(UrbanPitchRoute.Home.toString()) {
+                                popUpTo(UrbanPitchRoute.Register.toString()) { inclusive = true }
+                            }
+                        },
+                        onError = { error ->
+                            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                        }
+                    )
                 },
-                onBack = { navController.navigate(UrbanPitchRoute.Login.toString()) }
+                onBack = {
+                    navController.navigate(UrbanPitchRoute.Login.toString())
+                }
             )
         }
+
 
         composable(UrbanPitchRoute.Home.toString()) {
             val homeViewModel: HomeViewModel = koinViewModel()
