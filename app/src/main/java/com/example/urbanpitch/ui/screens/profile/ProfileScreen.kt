@@ -41,13 +41,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    authViewModel: AuthViewModel = koinViewModel(), // Usa Koin
+    authViewModel: AuthViewModel = koinViewModel(),
     onEditProfile: () -> Unit = {}
 ) {
     val user by authViewModel.currentUser.collectAsState()
     val context = LocalContext.current
 
-    // Logout: torna al Login
     val onLogout = {
         authViewModel.logout()
         navController.navigate(UrbanPitchRoute.Login.toString()) {

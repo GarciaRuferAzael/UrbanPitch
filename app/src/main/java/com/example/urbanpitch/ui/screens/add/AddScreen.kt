@@ -192,20 +192,18 @@ fun AddScreen(navController: NavController,
                                         val imageUrl = uri.toString()
 
                                         val pitch = Pitch(
-                                            id = "", // id vuoto, lo crea Firestore
+                                            id = "",
                                             name = name,
                                             description = description,
                                             city = city,
-                                            imageUrl = imageUrl, // URL pubblico su Firebase Storage
+                                            imageUrl = imageUrl,
                                             latitude = latitude.toFloatOrNull() ?: 0f,
                                             longitude = longitude.toFloatOrNull() ?: 0f
                                         )
                                         Log.d("aggiuntaDB", "Aggiunta pitch: $pitch")
 
-                                        // 🔥 Aggiungi il pitch su Firestore
                                         pitchVm.addPitch(pitch)
-
-                                        // 🔙 Torna alla Home
+                                        
                                         navController.popBackStack()
                                     }
                                 }
