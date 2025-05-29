@@ -18,17 +18,20 @@ import androidx.navigation.toRoute
 import com.example.urbanpitch.ui.screens.add.AddScreen
 import com.example.urbanpitch.ui.screens.add.AddViewModel
 import com.example.urbanpitch.ui.screens.details.DetailsScreen
+import com.example.urbanpitch.ui.screens.favourites.FavoritesScreen
+import com.example.urbanpitch.ui.screens.favourites.FavoritesViewModel
 import com.example.urbanpitch.ui.screens.home.HomeScreen
 import com.example.urbanpitch.ui.screens.home.HomeViewModel
 import com.example.urbanpitch.ui.screens.login.AuthViewModel
 import com.example.urbanpitch.ui.screens.map.MapScreen
 import com.example.urbanpitch.ui.screens.profile.ProfileScreen
-//import com.example.urbanpitch.ui.screens.profile.ProfileViewModel
 import com.example.urbanpitch.ui.screens.login.LoginScreen
 import com.example.urbanpitch.ui.screens.login.RegisterScreen
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 sealed interface UrbanPitchRoute {
     @Serializable data object Home : UrbanPitchRoute
@@ -38,7 +41,7 @@ sealed interface UrbanPitchRoute {
     @Serializable data object Login : UrbanPitchRoute
     @Serializable data object Register : UrbanPitchRoute
     @Serializable data object Map : UrbanPitchRoute
-    @Serializable data object Favourites : UrbanPitchRoute
+    @Serializable data object Favorites : UrbanPitchRoute
 }
 
 @Composable
@@ -108,9 +111,31 @@ fun UrbanPitchNavGraph(navController: NavHostController, startDestination: Strin
 
 
         composable(UrbanPitchRoute.Home.toString()) {
+            val pitchesViewModel: PitchesViewModel = koinViewModel()
+            val favoritesViewModel: FavoritesViewModel = koinViewModel()
             val homeViewModel: HomeViewModel = koinViewModel()
-            HomeScreen(pitchesState, navController, homeViewModel)
 
+            val state by pitchesViewModel.state.collectAsState()
+
+            HomeScreen(
+                state = state,
+                navController = navController,
+                viewModel = homeViewModel,
+                favoritesViewModel = favoritesViewModel
+            )
+        }
+
+        composable(UrbanPitchRoute.Favorites.toString()) {
+            val pitchesViewModel: PitchesViewModel = koinViewModel()
+            val favoritesViewModel: FavoritesViewModel = koinViewModel()
+
+            val state by pitchesViewModel.state.collectAsState()
+
+            FavoritesScreen(
+                favoritesVm = favoritesViewModel,
+                pitches = state.pitches,
+                navController = navController
+            )
         }
 
         composable<UrbanPitchRoute.Details> { backStackEntry ->

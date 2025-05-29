@@ -2,6 +2,7 @@ package com.example.urbanpitch.ui.composables
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
@@ -28,15 +29,18 @@ fun AppBar(navController: NavController, title: String) {
             )
         },
         navigationIcon = {
-            if (navController.previousBackStackEntry != null && title == "Aggiungi Campo" || title == "Dettagli Campo" || title == "") {
+            if (
+                navController.previousBackStackEntry != null &&
+                (title == "Aggiungi Campo" || title == "Dettagli Campo" || title == "")
+            ) {
                 IconButton(onClick = { navController.navigateUp() }) {
-                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Go Back")
+                    Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Go Back")
                 }
             }
         },
         actions = {
             if (title == "UrbanPitch") {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { /* TODO: apri filtro */ }) {
                     Icon(Icons.Outlined.FilterList, contentDescription = "Filter")
                 }
             }
@@ -46,3 +50,5 @@ fun AppBar(navController: NavController, title: String) {
         )
     )
 }
+
+

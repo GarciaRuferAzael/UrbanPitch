@@ -1,9 +1,11 @@
 package com.example.urbanpitch
 
 import com.example.urbanpitch.data.remote.OSMDataSource
+import com.example.urbanpitch.data.repositories.FavoritesRepository
 import com.example.urbanpitch.data.repositories.PitchesRepositoryFirebase
 import com.example.urbanpitch.ui.PitchesViewModel
 import com.example.urbanpitch.ui.screens.add.AddViewModel
+import com.example.urbanpitch.ui.screens.favourites.FavoritesViewModel
 import com.example.urbanpitch.ui.screens.home.HomeViewModel
 import com.example.urbanpitch.ui.screens.login.AuthViewModel
 import com.example.urbanpitch.ui.screens.map.MapViewModel
@@ -18,7 +20,7 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    // 🔥 Firebase Repository
+    // Firebase Repository
     single { PitchesRepositoryFirebase() }
 
     // HttpClient e OSM
@@ -33,7 +35,12 @@ val appModule = module {
 
     single { LocationService(androidContext()) }
 
+    single { FavoritesRepository() }
+
     // ViewModel
+
+    viewModel { FavoritesViewModel(get()) }
+
     viewModel { PitchesViewModel(get()) }
 
     viewModel { AddViewModel() }
