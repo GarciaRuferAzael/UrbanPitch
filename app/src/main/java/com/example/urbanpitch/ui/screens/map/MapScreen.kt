@@ -43,6 +43,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.config.Configuration
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
@@ -55,7 +56,6 @@ fun MapScreen(
     val locationService = remember { LocationService(context) }
     val userLocation = remember { mutableStateOf<Coordinates?>(null) }
 
-    // Recupera posizione sicura
     LaunchedEffect(Unit) {
         val location = locationService.getCurrentLocation()
         userLocation.value = location
@@ -63,6 +63,9 @@ fun MapScreen(
 
     val lat = userLocation.value?.latitude?.toFloat() ?: 41.9028f
     val lon = userLocation.value?.longitude?.toFloat() ?: 12.4964f
+
+    // Mantieni una reference alla MapView
+    val mapViewRef = remember { mutableStateOf<MapView?>(null) }
 
     Scaffold(
         topBar = { AppBar(navController, title = "Mappa") },
@@ -74,30 +77,30 @@ fun MapScreen(
                 },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Aggiungi Campo"
-                )
+                Icon(Icons.Default.Add, contentDescription = "Aggiungi Campo")
             }
         }
     ) { contentPadding ->
-        Box(modifier = Modifier
-            .padding(contentPadding)
-            .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
         ) {
-
             AndroidView(factory = {
                 Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
                 val map = MapView(context)
                 map.setTileSource(TileSourceFactory.MAPNIK)
                 map.setMultiTouchControls(true)
-
-                val controller = map.controller
-                controller.setZoom(15.0)
-                controller.setCenter(GeoPoint(lat.toDouble(), lon.toDouble()))
+                map.controller.setZoom(15.0)
+                map.controller.setCenter(GeoPoint(lat.toDouble(), lon.toDouble()))
+                mapViewRef.value = map
+                map
+            }, update = { mapView ->
+                mapView.controller.setCenter(GeoPoint(lat.toDouble(), lon.toDouble()))
+                mapView.overlays.clear() // pulizia marker vecchi
 
                 pitches.forEach { pitch ->
-                    val marker = Marker(map)
+                    val marker = Marker(mapView)
                     marker.position = GeoPoint(pitch.latitude.toDouble(), pitch.longitude.toDouble())
                     marker.title = pitch.name
                     marker.subDescription = pitch.description
@@ -111,14 +114,12 @@ fun MapScreen(
                         true
                     }
 
-                    map.overlays.add(marker)
+                    mapView.overlays.add(marker)
                 }
 
-                map
-            }, update = { mapView ->
-                mapView.controller.setCenter(GeoPoint(lat.toDouble(), lon.toDouble()))
                 mapView.invalidate()
             })
         }
     }
 }
+
