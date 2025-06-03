@@ -23,3 +23,9 @@ data class User(
     var hashedPwd: String = "",
     var profileImageUri: String = ""
 )
+
+data class PitchFilter(
+    val city: String? = null,
+    val maxDistanceKm: Double? = null,
+)
+

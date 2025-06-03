@@ -20,7 +20,7 @@ import com.example.urbanpitch.ui.UrbanPitchRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(navController: NavController, title: String) {
+fun AppBar(navController: NavController, title: String, onFilterClick: () -> Unit = {}) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -40,7 +40,7 @@ fun AppBar(navController: NavController, title: String) {
         },
         actions = {
             if (title == "UrbanPitch") {
-                IconButton(onClick = { /* TODO: apri filtro */ }) {
+                IconButton(onClick = onFilterClick) {
                     Icon(Icons.Outlined.FilterList, contentDescription = "Filter")
                 }
             }
@@ -50,5 +50,6 @@ fun AppBar(navController: NavController, title: String) {
         )
     )
 }
+
 
 

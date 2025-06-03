@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,13 +27,18 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.urbanpitch.data.database.Pitch
+import com.example.urbanpitch.data.database.PitchFilter
 import com.example.urbanpitch.data.repositories.FavoritesRepository
 import com.example.urbanpitch.ui.composables.BottomNavigationBar
 import com.example.urbanpitch.ui.PitchesState
@@ -67,6 +74,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.parameter.parametersOf
 import java.io.Console
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     state: PitchesState,
@@ -76,6 +84,19 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val userLocation by viewModel.userLocation.collectAsState()
+
+    val filter by viewModel.filter.collectAsState()
+    val filteredPitches = viewModel.getFilteredPitches(state.pitches)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showFilterSheet by remember { mutableStateOf(false) }
+
+
+    FilterBar(
+        filter = filter,
+        onFilterChange = { viewModel.setFilter(it)
+            showFilterSheet = false
+        }
+    )
 
     val locationPermissionHandler = rememberMultiplePermissions(
         permissions = listOf(
@@ -101,7 +122,11 @@ fun HomeScreen(
     val favoriteIds by favoritesViewModel.favoritePitchIds.collectAsState()
 
     Scaffold(
-        topBar = { AppBar(navController, title = "UrbanPitch") },
+        topBar = { AppBar(
+            navController,
+            title = "UrbanPitch",
+            onFilterClick = { showFilterSheet = true }
+        ) },
         bottomBar = { BottomNavigationBar(navController) },
         floatingActionButton = {
             FloatingActionButton(
@@ -120,7 +145,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(8.dp, 8.dp, 8.dp, 80.dp),
                 modifier = Modifier.padding(contentPadding)
             ) {
-                items(state.pitches) { pitch ->
+                items(filteredPitches) { pitch ->
                     PitchItemWithDistance(
                         pitch = pitch,
                         userCoords = userLocation,
@@ -134,6 +159,20 @@ fun HomeScreen(
             NoItemsPlaceholder(Modifier.padding(contentPadding))
         }
     }
+    if (showFilterSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilterSheet = false },
+            sheetState = sheetState
+        ) {
+            FilterBar(
+                filter = filter,
+                onFilterChange = {
+                    viewModel.setFilter(it)
+                }
+            )
+        }
+    }
+
 }
 
 
@@ -250,6 +289,40 @@ fun NoItemsPlaceholder(modifier: Modifier = Modifier) {
         Text(
             "Tap the + button to add a new pitch.",
             style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun FilterBar(
+    filter: PitchFilter,
+    onFilterChange: (PitchFilter) -> Unit
+) {
+    var city by remember { mutableStateOf(filter.city ?: "") }
+    var maxDistance by remember { mutableStateOf(filter.maxDistanceKm ?: 50.0) }
+
+    Column(Modifier.padding(8.dp)) {
+        Text("Filtri", style = MaterialTheme.typography.titleSmall)
+
+        OutlinedTextField(
+            value = city,
+            onValueChange = {
+                city = it
+                onFilterChange(filter.copy(city = it))
+            },
+            label = { Text("Città") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Text("Distanza massima: ${maxDistance.toInt()} km")
+        Slider(
+            value = maxDistance.toFloat(),
+            onValueChange = {
+                maxDistance = it.toDouble()
+                onFilterChange(filter.copy(maxDistanceKm = it.toDouble()))
+            },
+            valueRange = 1f..100f,
+            steps = 9
         )
     }
 }
