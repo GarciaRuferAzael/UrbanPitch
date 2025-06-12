@@ -22,7 +22,7 @@ class MapViewModel(
 
     private fun observePitches() {
         viewModelScope.launch {
-            repository.getAll().collect {  // 🔥 Usa getAll() di Firebase repository
+            repository.getAll().collect {
                 _pitches.value = it
             }
         }
