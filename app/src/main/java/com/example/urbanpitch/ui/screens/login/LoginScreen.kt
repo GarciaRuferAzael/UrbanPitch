@@ -25,10 +25,11 @@ import com.example.urbanpitch.ui.UrbanPitchRoute
 @Composable
 fun LoginScreen(
     navController: NavController,
-    //onGoogleLogin: () -> Unit,
     onLogin: (String, String) -> Unit,
     onRegister: () -> Unit,
 ) {
+    val colors = MaterialTheme.colorScheme
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -39,15 +40,29 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Login", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            "Login",
+            style = MaterialTheme.typography.headlineMedium,
+            color = colors.onBackground
+        )
 
         Spacer(Modifier.height(32.dp))
 
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true
+            label = { Text("Email", color = colors.onSurfaceVariant) },
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = colors.onSurface,
+                unfocusedTextColor = colors.onSurface,
+                disabledTextColor = colors.onSurfaceVariant,
+                cursorColor = colors.onSurface,
+                focusedBorderColor = colors.onSurface,
+                unfocusedBorderColor = colors.onSurfaceVariant,
+                focusedLabelColor = colors.onSurface,
+                unfocusedLabelColor = colors.onSurfaceVariant
+            )
         )
 
         Spacer(Modifier.height(16.dp))
@@ -55,35 +70,43 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("Password", color = colors.onSurfaceVariant) },
             singleLine = true,
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = colors.onSurface,
+                unfocusedTextColor = colors.onSurface,
+                disabledTextColor = colors.onSurfaceVariant,
+                cursorColor = colors.onSurface,
+                focusedBorderColor = colors.onSurface,
+                unfocusedBorderColor = colors.onSurfaceVariant,
+                focusedLabelColor = colors.onSurface,
+                unfocusedLabelColor = colors.onSurfaceVariant
+            )
         )
 
         Spacer(Modifier.height(24.dp))
 
-        Button(onClick = { onLogin(email, password) }, modifier = Modifier.fillMaxWidth()) {
-            Text("Login")
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedButton(onClick = {  }, modifier = Modifier.fillMaxWidth()) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_google_logo),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
+        Button(
+            onClick = { onLogin(email, password) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colors.primary,
+                contentColor = colors.onPrimary
             )
-            Spacer(Modifier.width(8.dp))
-            Text("Sign in with Google")
+        ) {
+            Text("Login")
         }
 
         Spacer(Modifier.height(16.dp))
 
         TextButton(onClick = onRegister) {
-            Text("Don’t have an account? Register")
+            Text(
+                "Don’t have an account? Register",
+                color = colors.primary
+            )
         }
     }
 }
+
 
