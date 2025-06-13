@@ -168,11 +168,11 @@ fun HomeScreen(
                 filter = filter,
                 onFilterChange = {
                     viewModel.setFilter(it)
+                    showFilterSheet = false
                 }
             )
         }
     }
-
 }
 
 
