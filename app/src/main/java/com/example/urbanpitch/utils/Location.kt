@@ -44,7 +44,12 @@ class LocationService(private val ctx: Context) {
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (!permissionGranted) throw SecurityException("Location permission not granted")
+        if (!permissionGranted) {
+            // Non lancia eccezione, restituisce null
+            _isLoadingLocation.value = false
+            return null
+        }
+
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             openLocationSettings()
         }
@@ -99,6 +104,7 @@ class LocationService(private val ctx: Context) {
             fusedLocationClient.requestLocationUpdates(request, locationCallback!!, Looper.getMainLooper())
         }
     }
+
 
     fun openLocationSettings() {
         val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).apply {

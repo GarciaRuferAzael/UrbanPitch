@@ -43,7 +43,6 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.config.Configuration
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
